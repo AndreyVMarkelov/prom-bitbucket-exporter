@@ -1,0 +1,42 @@
+{namespace bitbucket.plugin}
+
+/**
+ * @param token String
+ * @param saved Boolean
+ */
+{template .securetoken}
+{webResourceManager_requireResourcesForContext('prom.bitbucket.exporter')}
+<html>
+<head>
+    <meta name="decorator" content="atl.admin">
+    <meta name="activeTab" content="prom-bitbucket-exporter-admin-link">
+    <title>{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.title')}</title>
+</head>
+<body>
+<div>
+    <div>
+        {if $saved}
+            <div class="aui-message closeable shadowed">
+                <p class="title">
+                    <span class="aui-icon icon-success"></span>
+                    <strong>{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.success')}</strong>
+                </p>
+            </div>
+        {/if}
+        <form method="POST" action="" name="savesettings" class="aui">
+            <div class="field-group">
+                <label for="token">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.token')}</label>
+                <input class="text" type="text" id="token" name="token" value="{$token}" title="{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.token')}"/>
+                <div class="description">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.token.desc')}</div>
+            </div>
+            <div class="buttons-container">
+                <div class="buttons">
+                    <input value="{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.actions.save')}" type="submit" class="button submit"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+{/template}
