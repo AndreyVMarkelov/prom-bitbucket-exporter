@@ -13,9 +13,10 @@ public class MetricListener {
         this.metricCollector = metricCollector;
     }
 
-    @EventListener
-    public void mylistener(RepositoryPushEvent pushEvent) {
+    //--> Push
 
+    @EventListener
+    public void repositoryPushEvent(RepositoryPushEvent repositoryPushEvent) {
     }
 
     //--> Auth events

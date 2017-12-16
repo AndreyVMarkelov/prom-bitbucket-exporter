@@ -14,9 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
-
-import static com.google.common.collect.ImmutableMap.of;
 
 public class AdminMetricsSecurityTokenServlet extends HttpServlet {
     private static final String TEMPLATE_NAME = "bitbucket.plugin.securetoken";
@@ -47,9 +46,10 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
         String token = request.getParameter("token");
         secureTokenManager.setToken(token);
 
-        render(response, of(
-                "token", secureTokenManager.getToken(),
-                "saved", Boolean.TRUE));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", secureTokenManager.getToken());
+        params.put("saved", Boolean.TRUE);
+        render(response, params);
     }
 
     @Override
@@ -73,9 +73,10 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
             return;
         }
 
-        render(response, of(
-                "token", secureTokenManager.getToken(),
-                "saved", Boolean.FALSE));
+        Map<String, Object> params = new HashMap<>();
+        params.put("token", secureTokenManager.getToken());
+        params.put("saved", Boolean.FALSE);
+        render(response, params);
     }
 
     private void render(
