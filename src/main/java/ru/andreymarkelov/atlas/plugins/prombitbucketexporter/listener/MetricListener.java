@@ -17,17 +17,25 @@ public class MetricListener {
 
     @EventListener
     public void repositoryPushEvent(RepositoryPushEvent repositoryPushEvent) {
+        metricCollector.pushCounter(
+                repositoryPushEvent.getRepository().getName(),
+                repositoryPushEvent.getUser() != null ? repositoryPushEvent.getUser().getName() : "unknown"
+        );
     }
 
     //--> Auth events
 
     @EventListener
     public void authenticationSuccessEvent(AuthenticationSuccessEvent authenticationSuccessEvent) {
-        authenticationSuccessEvent.getSource();
+        metricCollector.successAuthCounter(
+                authenticationSuccessEvent.getUsername() != null ? authenticationSuccessEvent.getUsername() : "unknown"
+        );
     }
 
     @EventListener
     public void authenticationFailureEvent(AuthenticationFailureEvent authenticationFailureEvent) {
-        authenticationFailureEvent.getException();
+        metricCollector.failedAuthCounter(
+                authenticationFailureEvent.getUsername() != null ? authenticationFailureEvent.getUsername() : "unknown"
+        );
     }
 }
