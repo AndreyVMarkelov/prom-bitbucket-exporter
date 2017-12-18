@@ -11,7 +11,6 @@
         <param name="atlassian-data-center-compatible">true</param>
     </plugin-info>
 
-
     <!-- I18N -->
     <resource type="i18n" name="i18n" location="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.i18n.prom-bitbucket-exporter"/>
 
@@ -53,12 +52,13 @@
         </directory>
         <dependency>com.atlassian.bitbucket.server.bitbucket-web:server-soy-templates</dependency>
     </client-resource>
-    <client-resource key="network-page" name="Network Page Resources">
+    <client-resource name="Admin SOY Resources" key="prom-for-bitbucket-exporter-templates-resources">
         <context>prom.bitbucket.exporter</context>
         <directory location="/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/templates/">
             <exclude>/**/*.soy</exclude>
         </directory>
         <dependency>com.atlassian.bitbucket.server.bitbucket-web-api:jquery</dependency>
+        <dependency>ru.andreymarkelov.atlas.plugins.prom-bitbucket-exporter:prom-bitbucket-exporter-resources</dependency>
     </client-resource>
 
     <!-- Components -->
@@ -73,6 +73,5 @@
     <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
     <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
     <component-import key="soyTemplateRenderer" interface="com.atlassian.soy.renderer.SoyTemplateRenderer"/>
-    <component-import key="webResourceManager" interface="com.atlassian.plugin.webresource.WebResourceManager"/>
     <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
 </atlassian-plugin>

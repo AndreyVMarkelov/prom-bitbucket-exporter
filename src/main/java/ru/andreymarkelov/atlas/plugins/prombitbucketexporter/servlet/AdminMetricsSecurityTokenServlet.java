@@ -1,6 +1,5 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.servlet;
 
-import com.atlassian.plugin.webresource.WebResourceManager;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;
@@ -23,19 +22,16 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
     private final SecureTokenManager secureTokenManager;
     private final UserManager userManager;
     private final SoyTemplateRenderer soyTemplateRenderer;
-    private final WebResourceManager webResourceManager;
     private final LoginUriProvider loginUriProvider;
 
     public AdminMetricsSecurityTokenServlet(
             SecureTokenManager secureTokenManager,
             UserManager userManager,
             SoyTemplateRenderer soyTemplateRenderer,
-            WebResourceManager webResourceManager,
             LoginUriProvider loginUriProvider) {
         this.secureTokenManager = secureTokenManager;
         this.userManager = userManager;
         this.soyTemplateRenderer = soyTemplateRenderer;
-        this.webResourceManager = webResourceManager;
         this.loginUriProvider = loginUriProvider;
     }
 
@@ -82,7 +78,6 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
     private void render(
             HttpServletResponse response,
             Map<String, Object> data) throws IOException, ServletException {
-        webResourceManager.requireResource("ru.andreymarkelov.atlas.plugins.prom-bitbucket-exporter:commitgraph-resources");
         response.setContentType("text/html;charset=UTF-8");
         try {
             soyTemplateRenderer.render(
