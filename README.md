@@ -6,6 +6,6 @@ For more information the documentation [Prometheus Exporter For Bitbucket](https
 
 ## Grafana examples 
 
-* [Example grafana dashborad](./grafana/README.md)
+* [Example grafana dashborad](./grafana/dashboard-example.json)
 
 ![image](./grafana/img/grafana-bitbucket-dashboard.png)
