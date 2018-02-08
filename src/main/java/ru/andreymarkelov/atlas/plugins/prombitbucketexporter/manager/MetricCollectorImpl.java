@@ -1,7 +1,6 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager;
 
 import com.atlassian.bitbucket.license.LicenseService;
-import com.atlassian.bitbucket.server.ApplicationPropertiesService;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Counter;
@@ -18,9 +17,8 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
     private final ApplicationPropertiesService applicationPropertiesService;
 
     @Autowired
-    public MetricCollectorImpl(@ComponentImport LicenseService licenseService, @ComponentImport ApplicationPropertiesService applicationPropertiesService) {
+    public MetricCollectorImpl(@ComponentImport LicenseService licenseService) {
         this.licenseService = licenseService;
-        this.applicationPropertiesService = applicationPropertiesService;
     }
 
     private final Counter successAuthCounter = Counter.build()
