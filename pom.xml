@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.andreymarkelov.atlas.plugins</groupId>
     <artifactId>prom-bitbucket-exporter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>atlassian-plugin</packaging>
 
     <name>Prometheus Exporter For Bitbucket</name>
@@ -16,52 +16,90 @@
         <url>http://ru.linkedin.com/in/andreymarkelov/</url>
     </organization>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.atlassian.bitbucket.server</groupId>
+                <artifactId>bitbucket-parent</artifactId>
+                <version>${bitbucket.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.atlassian.bitbucket.server</groupId>
+                <artifactId>bitbucket-api</artifactId>
+                <version>${bitbucket.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.atlassian.bitbucket.server</groupId>
+                <artifactId>bitbucket-spi</artifactId>
+                <version>${bitbucket.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <dependency>
+            <groupId>com.atlassian.sal</groupId>
+            <artifactId>sal-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.bitbucket.server</groupId>
+            <artifactId>bitbucket-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.bitbucket.server</groupId>
+            <artifactId>bitbucket-spi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.bitbucket.server</groupId>
+            <artifactId>bitbucket-scm-common</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.bitbucket.server</groupId>
+            <artifactId>bitbucket-git-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.atlassian.bitbucket.server</groupId>
             <artifactId>bitbucket-page-objects</artifactId>
             <scope>provided</scope>
-            <version>${bitbucket.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.3</version>
+            <groupId>com.atlassian.soy</groupId>
+            <artifactId>soy-template-renderer-api</artifactId>
+            <version>3.3.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <groupId>com.atlassian.extras</groupId>
+            <artifactId>atlassian-extras-api</artifactId>
+            <version>3.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
+            <groupId>com.atlassian.sal</groupId>
+            <artifactId>sal-api</artifactId>
+            <version>2.13.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.atlassian.event</groupId>
             <artifactId>atlassian-event</artifactId>
             <version>2.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.sal</groupId>
-            <artifactId>sal-api</artifactId>
-            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.1.1</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.2-atlassian-1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -69,74 +107,43 @@
             <version>3.0</version>
         </dependency>
         <dependency>
-            <groupId>com.atlassian.plugins</groupId>
-            <artifactId>atlassian-plugins-webresource</artifactId>
-            <scope>provided</scope>
-            <version>3.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.bitbucket.server</groupId>
-            <artifactId>bitbucket-api</artifactId>
-            <scope>provided</scope>
-            <version>${bitbucket.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.bitbucket.server</groupId>
-            <artifactId>bitbucket-spi</artifactId>
-            <scope>provided</scope>
-            <version>${bitbucket.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.bitbucket.server</groupId>
-            <artifactId>bitbucket-util</artifactId>
-            <scope>provided</scope>
-            <version>${bitbucket.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.soy</groupId>
-            <artifactId>soy-template-renderer-api</artifactId>
-            <scope>provided</scope>
-            <version>3.3.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.atlassian.bitbucket.server</groupId>
-            <artifactId>bitbucket-git-common</artifactId>
-            <scope>provided</scope>
-            <version>${bitbucket.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.bitbucket.server</groupId>
-            <artifactId>bitbucket-git-api</artifactId>
-            <scope>provided</scope>
-            <version>${bitbucket.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.bitbucket.server</groupId>
-            <artifactId>bitbucket-scm-common</artifactId>
-            <scope>provided</scope>
-            <version>${bitbucket.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient</artifactId>
-            <version>0.1.0</version>
+            <version>${prometheus.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_common</artifactId>
-            <version>0.1.0</version>
+            <version>${prometheus.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_hotspot</artifactId>
-            <version>0.1.0</version>
+            <version>${prometheus.version}</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>bitbucket-maven-plugin</artifactId>
+                <version>${amps.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <products>
+                        <product>
+                            <id>bitbucket</id>
+                            <instanceId>bitbucket</instanceId>
+                            <version>${bitbucket.version}</version>
+                            <dataVersion>${bitbucket.data.version}</dataVersion>
+                        </product>
+                    </products>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.6.1</version>
@@ -145,12 +152,6 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>com.atlassian.maven.plugins</groupId>
-                <artifactId>bitbucket-maven-plugin</artifactId>
-                <version>${amps.version}</version>
-                <extensions>true</extensions>
-            </plugin>
         </plugins>
     </build>
 
@@ -158,6 +159,7 @@
         <bitbucket.version>4.0.0-m27</bitbucket.version>
         <bitbucket.data.version>${bitbucket.version}</bitbucket.data.version>
         <amps.version>6.3.6</amps.version>
+        <prometheus.version>0.2.0</prometheus.version>
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
     </properties>
 </project>
