@@ -70,8 +70,12 @@
     <component name="Security Token Data Manager" key="prom-for-bitbucket-exporter-data-manager" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManagerImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManager</interface>
     </component>
+
+    <!-- Component Imports -->
     <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
     <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
     <component-import key="soyTemplateRenderer" interface="com.atlassian.soy.renderer.SoyTemplateRenderer"/>
     <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
+    <component-import key="licenseService" interface="com.atlassian.bitbucket.license.LicenseService"/>
+    <component-import key="userService" interface="com.atlassian.bitbucket.user.UserService"/>
 </atlassian-plugin>

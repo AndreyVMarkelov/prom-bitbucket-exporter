@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.MetricCollector;
 import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManager;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,7 +33,7 @@ public class PrometheusExporter extends HttpServlet {
     @Override
     protected void doGet(
             final HttpServletRequest httpServletRequest,
-            final HttpServletResponse httpServletResponse) throws ServletException, IOException {
+            final HttpServletResponse httpServletResponse) throws IOException {
         String paramToken = httpServletRequest.getParameter("token");
         String storedToken = secureTokenManager.getToken();
 
@@ -53,7 +52,7 @@ public class PrometheusExporter extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         doGet(httpServletRequest, httpServletResponse);
     }
 

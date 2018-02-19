@@ -25,4 +25,3 @@ public class SecureTokenManagerImpl implements SecureTokenManager {
         return pluginSettings;
     }
 }
-
