@@ -1,4 +1,4 @@
-# Prometheus Exporter For Bitbucket
+# Prometheus Exporter For Bitbucket [![Build Status](https://travis-ci.org/AndreyVMarkelov/prom-bitbucket-exporter.svg?branch=master)](https://travis-ci.org/AndreyVMarkelov/prom-bitbucket-exporter)
 
 This is Bitbucket plugin which provides endpoint to expose Bitbucket metrics to Prometheus.
 
