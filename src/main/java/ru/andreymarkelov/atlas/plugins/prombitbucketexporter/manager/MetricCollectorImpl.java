@@ -1,25 +1,24 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager;
 
 import com.atlassian.bitbucket.license.LicenseService;
-import com.atlassian.bitbucket.user.UserService;
-import com.atlassian.bitbucket.util.PageRequestImpl;
 import com.atlassian.extras.api.bitbucket.BitbucketServerLicense;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MetricCollectorImpl extends Collector implements MetricCollector {
+    private static final Logger log = LoggerFactory.getLogger(MetricCollectorImpl.class);
+
     private final LicenseService licenseService;
-    private final UserService userService;
 
     public MetricCollectorImpl(
-            LicenseService licenseService,
-            UserService userService) {
+            LicenseService licenseService) {
         this.licenseService = licenseService;
-        this.userService = userService;
     }
 
     //--> License
@@ -85,9 +84,10 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
     public List<Collector.MetricFamilySamples> collect() {
         BitbucketServerLicense bitbucketServerLicense = licenseService.get();
         if (bitbucketServerLicense != null) {
+            log.debug("License info: {}", bitbucketServerLicense);
             maintenanceExpiryDaysGauge.set(bitbucketServerLicense.getNumberOfDaysBeforeMaintenanceExpiry());
             activeUsersGauge.set(bitbucketServerLicense.getMaximumNumberOfUsers());
-            allUsersGauge.set(userService.findUsers(new PageRequestImpl(0, bitbucketServerLicense.getMaximumNumberOfUsers())).getSize());
+            allUsersGauge.set(licenseService.getLicensedUsersCount());
         }
 
         List<Collector.MetricFamilySamples> result = new ArrayList<>();
