@@ -70,6 +70,9 @@
     <component name="Security Token Data Manager" key="prom-for-bitbucket-exporter-data-manager" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManagerImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManager</interface>
     </component>
+    <component name="Scheduled Metrics Evaluator" key="prom-for-bitbucket-exporter-evaluator" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluatorImpl">
+        <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluator</interface>
+    </component>
 
     <!-- Component Imports -->
     <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>

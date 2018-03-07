@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.andreymarkelov.atlas.plugins</groupId>
     <artifactId>prom-bitbucket-exporter</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>atlassian-plugin</packaging>
 
     <name>Prometheus Exporter For Bitbucket</name>
@@ -153,7 +153,7 @@
     <properties>
         <bitbucket.version>4.0.0-m27</bitbucket.version>
         <bitbucket.data.version>${bitbucket.version}</bitbucket.data.version>
-        <amps.version>6.3.6</amps.version>
+        <amps.version>6.3.15</amps.version>
         <prometheus.version>0.2.0</prometheus.version>
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
     </properties>

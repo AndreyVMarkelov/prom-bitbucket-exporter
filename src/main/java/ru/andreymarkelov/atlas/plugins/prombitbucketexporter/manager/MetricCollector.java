@@ -6,5 +6,5 @@ public interface MetricCollector {
     Collector getCollector();
     void successAuthCounter(String username);
     void failedAuthCounter(String username);
-    void pushCounter(String repository, String username);
+    void pushCounter(String project, String repository, String username);
 }

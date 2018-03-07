@@ -57,7 +57,7 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
     private final Counter pushCounter = Counter.build()
             .name("bitbucket_repo_push_count")
             .help("Repository Pushes Count")
-            .labelNames("repository", "username")
+            .labelNames("project", "repository", "username")
             .create();
 
     @Override
@@ -71,8 +71,8 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
     }
 
     @Override
-    public void pushCounter(String repository, String username) {
-        pushCounter.labels(repository, username).inc();
+    public void pushCounter(String project, String repository, String username) {
+        pushCounter.labels(project, repository, username).inc();
     }
 
     @Override
