@@ -1,8 +1,6 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager;
 
-public interface ScheduledMetricEvaluator {
-    long getLastExecutionTimestamp();
-    void restartScraping(int newDelay);
+public interface ScrapingSettingsManager {
     int getDelay();
     void setDelay(int delay);
 }

@@ -70,6 +70,9 @@
     <component name="Security Token Data Manager" key="prom-for-bitbucket-exporter-data-manager" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManagerImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManager</interface>
     </component>
+    <component name="Scraping Data Manager" key="prom-for-bitbucket-exporter-scraping-manager" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScrapingSettingsManagerImpl">
+        <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScrapingSettingsManager</interface>
+    </component>
     <component name="Scheduled Metrics Evaluator" key="prom-for-bitbucket-exporter-evaluator" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluatorImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluator</interface>
     </component>

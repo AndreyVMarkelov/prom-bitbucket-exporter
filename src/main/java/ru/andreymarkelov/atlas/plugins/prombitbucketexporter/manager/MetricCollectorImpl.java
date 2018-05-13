@@ -1,5 +1,8 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.atlassian.bitbucket.license.LicenseService;
 import com.atlassian.extras.api.bitbucket.BitbucketServerLicense;
 import io.prometheus.client.Collector;
@@ -8,17 +11,17 @@ import io.prometheus.client.Gauge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MetricCollectorImpl extends Collector implements MetricCollector {
     private static final Logger log = LoggerFactory.getLogger(MetricCollectorImpl.class);
 
     private final LicenseService licenseService;
+    private final ScheduledMetricEvaluator scheduledMetricEvaluator;
 
     public MetricCollectorImpl(
-            LicenseService licenseService) {
+            LicenseService licenseService,
+            ScheduledMetricEvaluator scheduledMetricEvaluator) {
         this.licenseService = licenseService;
+        this.scheduledMetricEvaluator = scheduledMetricEvaluator;
     }
 
     //--> License
