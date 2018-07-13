@@ -1,38 +1,51 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.servlet;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.atlassian.bitbucket.i18n.I18nService;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.soy.renderer.SoyException;
 import com.atlassian.soy.renderer.SoyTemplateRenderer;
+import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluator;
+import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScrapingSettingsManager;
 import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManager;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AdminMetricsSecurityTokenServlet extends HttpServlet {
     private static final String TEMPLATE_NAME = "bitbucket.plugin.securetoken";
 
     private final SecureTokenManager secureTokenManager;
+    private final ScrapingSettingsManager scrapingSettingsManager;
+    private final ScheduledMetricEvaluator scheduledMetricEvaluator;
     private final UserManager userManager;
     private final SoyTemplateRenderer soyTemplateRenderer;
     private final LoginUriProvider loginUriProvider;
+    private final I18nService i18nService;
 
     public AdminMetricsSecurityTokenServlet(
             SecureTokenManager secureTokenManager,
+            ScrapingSettingsManager scrapingSettingsManager,
+            ScheduledMetricEvaluator scheduledMetricEvaluator,
             UserManager userManager,
             SoyTemplateRenderer soyTemplateRenderer,
-            LoginUriProvider loginUriProvider) {
+            LoginUriProvider loginUriProvider,
+            I18nService i18nService) {
         this.secureTokenManager = secureTokenManager;
+        this.scrapingSettingsManager = scrapingSettingsManager;
+        this.scheduledMetricEvaluator = scheduledMetricEvaluator;
         this.userManager = userManager;
         this.soyTemplateRenderer = soyTemplateRenderer;
         this.loginUriProvider = loginUriProvider;
+        this.i18nService = i18nService;
     }
 
     @Override
@@ -40,10 +53,18 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         String token = request.getParameter("token");
+        String delay = request.getParameter("delay");
         secureTokenManager.setToken(token);
+        scrapingSettingsManager.setDelay(Integer.parseInt(delay));
+        scheduledMetricEvaluator.restartScraping(Integer.parseInt(delay));
+
+        long temp = scheduledMetricEvaluator.getLastExecutionTimestamp();
+        String lastExecutionTimestamp = (temp > 0) ? new Date(temp).toString() : i18nService.getMessage("ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.notyetexecuted");
 
         Map<String, Object> params = new HashMap<>();
         params.put("token", secureTokenManager.getToken());
+        params.put("delay", scrapingSettingsManager.getDelay());
+        params.put("lastexecution", lastExecutionTimestamp);
         params.put("saved", Boolean.TRUE);
         render(response, params);
     }
@@ -69,8 +90,13 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
             return;
         }
 
+        long temp = scheduledMetricEvaluator.getLastExecutionTimestamp();
+        String lastExecutionTimestamp = (temp > 0) ? new Date(temp).toString() : i18nService.getMessage("ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.notyetexecuted");
+
         Map<String, Object> params = new HashMap<>();
         params.put("token", secureTokenManager.getToken());
+        params.put("delay", scrapingSettingsManager.getDelay());
+        params.put("lastexecution", lastExecutionTimestamp);
         params.put("saved", Boolean.FALSE);
         render(response, params);
     }

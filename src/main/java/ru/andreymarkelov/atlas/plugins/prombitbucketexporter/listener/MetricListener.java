@@ -6,6 +6,8 @@ import com.atlassian.bitbucket.event.pull.PullRequestDeclinedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestMergedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestOpenedEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryPushEvent;
+import com.atlassian.bitbucket.repository.Repository;
+import com.atlassian.bitbucket.user.ApplicationUser;
 import com.atlassian.event.api.EventListener;
 import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.MetricCollector;
 
@@ -20,43 +22,47 @@ public class MetricListener {
 
     @EventListener
     public void repositoryPushEvent(RepositoryPushEvent repositoryPushEvent) {
-        metricCollector.pushCounter(
-                repositoryPushEvent.getRepository().getProject().getKey(),
-                repositoryPushEvent.getRepository().getName(),
-                repositoryPushEvent.getUser() != null ? repositoryPushEvent.getUser().getName() : "unknown"
-        );
+        Repository repository = repositoryPushEvent.getRepository();
+        metricCollector.pushCounter(repository.getProject().getKey(), repository.getName(), username(repositoryPushEvent.getUser()));
     }
 
     //--> Pull Requests
 
     @EventListener
     public void pullRequestOpenedEvent(PullRequestOpenedEvent pullRequestOpenedEvent) {
-
+        Repository repository = pullRequestOpenedEvent.getPullRequest().getFromRef().getRepository();
+        metricCollector.openPullRequest(repository.getProject().getKey(), repository.getName());
     }
 
     @EventListener
     public void pullRequestMergedEvent(PullRequestMergedEvent pullRequestMergedEvent) {
-
+        Repository repository = pullRequestMergedEvent.getPullRequest().getFromRef().getRepository();
+        metricCollector.mergePullRequest(repository.getProject().getKey(), repository.getName());
     }
 
     @EventListener
     public void pullRequestDeclinedEvent(PullRequestDeclinedEvent pullRequestDeclinedEvent) {
-
+        Repository repository = pullRequestDeclinedEvent.getPullRequest().getFromRef().getRepository();
+        metricCollector.declinePullRequest(repository.getProject().getKey(), repository.getName());
     }
 
     //--> Auth events
 
     @EventListener
     public void authenticationSuccessEvent(AuthenticationSuccessEvent authenticationSuccessEvent) {
-        metricCollector.successAuthCounter(
-                authenticationSuccessEvent.getUsername() != null ? authenticationSuccessEvent.getUsername() : "unknown"
-        );
+        metricCollector.successAuthCounter(username(authenticationSuccessEvent.getUsername()));
     }
 
     @EventListener
     public void authenticationFailureEvent(AuthenticationFailureEvent authenticationFailureEvent) {
-        metricCollector.failedAuthCounter(
-                authenticationFailureEvent.getUsername() != null ? authenticationFailureEvent.getUsername() : "unknown"
-        );
+        metricCollector.failedAuthCounter(username(authenticationFailureEvent.getUsername()));
+    }
+
+    private static String username(String username) {
+        return username != null ? username : "unknown";
+    }
+
+    private static String username(ApplicationUser applicationUser) {
+        return applicationUser != null ? applicationUser.getName() : "unknown";
     }
 }

@@ -2,6 +2,8 @@
 
 /**
  * @param token String
+ * @param delay String
+ * @param lastexecution String
  * @param saved Boolean
  */
 {template .securetoken}
@@ -14,6 +16,8 @@
 </head>
 <body>
 <div>
+    <h2>{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.title')}</h2>
+    <p>{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.desc')}</p>
     <div>
         {if $saved}
             <div class="aui-message closeable shadowed">
@@ -25,9 +29,18 @@
         {/if}
         <form method="POST" action="" name="savesettings" class="aui">
             <div class="field-group">
-                <label for="token">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.token')}</label>
+                <label for="token">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.token')}:</label>
                 <input class="text" type="text" id="token" name="token" value="{$token}" title="{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.token')}"/>
                 <div class="description">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.token.desc')}</div>
+            </div>
+            <div class="field-group">
+                <label for="delay">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.delay')}:<span class="aui-icon icon-required">required</span></label>
+                <input id="delay" name="delay" type="number" min=1 class="text" value="{$delay}"/>
+                <div class="description">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.delay.desc')}</div>
+            </div>
+            <div class="field-group">
+                <label for="lastexecution">{getText('ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.lastexecution')}:</label>
+                <span id="lastexecution" class="field-value">{$lastexecution}</span>
             </div>
             <div class="buttons-container">
                 <div class="buttons">

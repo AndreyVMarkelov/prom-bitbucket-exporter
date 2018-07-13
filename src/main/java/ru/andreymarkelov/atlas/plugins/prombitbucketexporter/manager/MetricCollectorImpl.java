@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.atlassian.bitbucket.license.LicenseService;
+import com.atlassian.bitbucket.mail.MailService;
 import com.atlassian.extras.api.bitbucket.BitbucketServerLicense;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Counter;
@@ -16,12 +17,15 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
 
     private final LicenseService licenseService;
     private final ScheduledMetricEvaluator scheduledMetricEvaluator;
+    private final MailService mailService;
 
     public MetricCollectorImpl(
             LicenseService licenseService,
-            ScheduledMetricEvaluator scheduledMetricEvaluator) {
+            ScheduledMetricEvaluator scheduledMetricEvaluator,
+            MailService mailService) {
         this.licenseService = licenseService;
         this.scheduledMetricEvaluator = scheduledMetricEvaluator;
+        this.mailService = mailService;
     }
 
     //--> License
@@ -63,6 +67,43 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
             .labelNames("project", "repository", "username")
             .create();
 
+    //--> Pull requests
+
+    private final Counter openPullRequest = Counter.build()
+            .name("bitbucket_pull_request_open")
+            .help("Opened Pull Requests Count")
+            .labelNames("project", "repository")
+            .create();
+
+    private final Counter mergePullRequest = Counter.build()
+            .name("bitbucket_pull_request_merge")
+            .help("Merged Pull Requests Count")
+            .labelNames("project", "repository")
+            .create();
+
+    private final Counter declinePullRequest = Counter.build()
+            .name("bitbucket_pull_request_decline")
+            .help("Declined Pull Requests Count")
+            .labelNames("project", "repository")
+            .create();
+
+    //--> Scheduled
+
+    private final Gauge totalProjectsGauge = Gauge.build()
+            .name("bitbucket_total_projects_gauge")
+            .help("Total Projects Gauge")
+            .create();
+
+    private final Gauge totalRepositoriesGauge = Gauge.build()
+            .name("bitbucket_total_repositories_gauge")
+            .help("Total Repositories Gauge")
+            .create();
+
+    private final Gauge totalPullRequestsGauge = Gauge.build()
+            .name("bitbucket_total_pull_requests_gauge")
+            .help("Total Pull Requests Gauge")
+            .create();
+
     @Override
     public void successAuthCounter(String username) {
         successAuthCounter.labels(username).inc();
@@ -76,6 +117,21 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
     @Override
     public void pushCounter(String project, String repository, String username) {
         pushCounter.labels(project, repository, username).inc();
+    }
+
+    @Override
+    public void openPullRequest(String project, String repository) {
+        openPullRequest.labels(project, repository).inc();
+    }
+
+    @Override
+    public void mergePullRequest(String project, String repository) {
+        mergePullRequest.labels(project, repository).inc();
+    }
+
+    @Override
+    public void declinePullRequest(String project, String repository) {
+        declinePullRequest.labels(project, repository).inc();
     }
 
     @Override
@@ -93,13 +149,23 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
             allUsersGauge.set(licenseService.getLicensedUsersCount());
         }
 
+        totalProjectsGauge.set(scheduledMetricEvaluator.getTotalProjects());
+        totalRepositoriesGauge.set(scheduledMetricEvaluator.getTotalRepositories());
+        totalPullRequestsGauge.set(scheduledMetricEvaluator.getTotalPullRequests());
+
         List<Collector.MetricFamilySamples> result = new ArrayList<>();
         result.addAll(successAuthCounter.collect());
         result.addAll(failedAuthCounter.collect());
         result.addAll(pushCounter.collect());
+        result.addAll(openPullRequest.collect());
+        result.addAll(mergePullRequest.collect());
+        result.addAll(declinePullRequest.collect());
         result.addAll(maintenanceExpiryDaysGauge.collect());
         result.addAll(allUsersGauge.collect());
         result.addAll(activeUsersGauge.collect());
+        result.addAll(totalProjectsGauge.collect());
+        result.addAll(totalRepositoriesGauge.collect());
+        result.addAll(totalPullRequestsGauge.collect());
         return result;
     }
 }

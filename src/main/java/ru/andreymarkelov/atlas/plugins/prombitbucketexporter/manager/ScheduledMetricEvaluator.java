@@ -5,4 +5,7 @@ public interface ScheduledMetricEvaluator {
     void restartScraping(int newDelay);
     int getDelay();
     void setDelay(int delay);
+    long getTotalProjects();
+    long getTotalRepositories();
+    long getTotalPullRequests();
 }
