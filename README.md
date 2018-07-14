@@ -8,6 +8,6 @@ On Atlassian Marketplace [Prometheus Exporter For Bitbucket](https://marketplace
 
 ## Grafana examples 
 
-* [Example grafana dashborad](./grafana/dashboard-example.json)
+* [Example Grafana Dashborad](https://grafana.com/dashboards/6984)
 
-![image](./grafana/img/grafana-bitbucket-dashboard.png)
+![image](./grafana/img/bitbuckt-board.png)
