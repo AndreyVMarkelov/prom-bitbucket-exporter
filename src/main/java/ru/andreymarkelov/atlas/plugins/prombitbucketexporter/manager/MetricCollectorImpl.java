@@ -1,22 +1,27 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.atlassian.bitbucket.license.LicenseService;
 import com.atlassian.bitbucket.mail.MailService;
 import com.atlassian.extras.api.bitbucket.BitbucketServerLicense;
 import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
+import io.prometheus.client.hotspot.DefaultExports;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
-public class MetricCollectorImpl extends Collector implements MetricCollector {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MetricCollectorImpl extends Collector implements MetricCollector, DisposableBean, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(MetricCollectorImpl.class);
 
     private final LicenseService licenseService;
     private final ScheduledMetricEvaluator scheduledMetricEvaluator;
+    private final CollectorRegistry registry;
     private final MailService mailService;
 
     public MetricCollectorImpl(
@@ -25,6 +30,7 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
             MailService mailService) {
         this.licenseService = licenseService;
         this.scheduledMetricEvaluator = scheduledMetricEvaluator;
+        this.registry = CollectorRegistry.defaultRegistry;
         this.mailService = mailService;
     }
 
@@ -135,11 +141,6 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
     }
 
     @Override
-    public Collector getCollector() {
-        return this;
-    }
-
-    @Override
     public List<Collector.MetricFamilySamples> collect() {
         BitbucketServerLicense bitbucketServerLicense = licenseService.get();
         if (bitbucketServerLicense != null) {
@@ -167,5 +168,21 @@ public class MetricCollectorImpl extends Collector implements MetricCollector {
         result.addAll(totalRepositoriesGauge.collect());
         result.addAll(totalPullRequestsGauge.collect());
         return result;
+    }
+
+    @Override
+    public CollectorRegistry getRegistry() {
+        return registry;
+    }
+
+    @Override
+    public void destroy() {
+        this.registry.unregister(this);
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        this.registry.register(this);
+        DefaultExports.initialize();
     }
 }

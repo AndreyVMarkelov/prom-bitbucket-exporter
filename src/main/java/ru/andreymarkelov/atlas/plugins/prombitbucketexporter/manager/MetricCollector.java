@@ -1,9 +1,9 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager;
 
-import io.prometheus.client.Collector;
+import io.prometheus.client.CollectorRegistry;
 
 public interface MetricCollector {
-    Collector getCollector();
+    CollectorRegistry getRegistry();
     void successAuthCounter(String username);
     void failedAuthCounter(String username);
     void pushCounter(String project, String repository, String username);

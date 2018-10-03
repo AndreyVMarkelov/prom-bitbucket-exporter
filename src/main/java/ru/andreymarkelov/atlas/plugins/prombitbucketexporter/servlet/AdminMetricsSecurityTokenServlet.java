@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.atlassian.bitbucket.i18n.I18nService;
+import com.atlassian.bitbucket.server.ApplicationPropertiesService;
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserKey;
 import com.atlassian.sal.api.user.UserManager;
@@ -30,6 +31,7 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
     private final SoyTemplateRenderer soyTemplateRenderer;
     private final LoginUriProvider loginUriProvider;
     private final I18nService i18nService;
+    private final ApplicationPropertiesService applicationPropertiesService;
 
     public AdminMetricsSecurityTokenServlet(
             SecureTokenManager secureTokenManager,
@@ -38,7 +40,8 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
             UserManager userManager,
             SoyTemplateRenderer soyTemplateRenderer,
             LoginUriProvider loginUriProvider,
-            I18nService i18nService) {
+            I18nService i18nService,
+            ApplicationPropertiesService applicationPropertiesService) {
         this.secureTokenManager = secureTokenManager;
         this.scrapingSettingsManager = scrapingSettingsManager;
         this.scheduledMetricEvaluator = scheduledMetricEvaluator;
@@ -46,6 +49,7 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
         this.soyTemplateRenderer = soyTemplateRenderer;
         this.loginUriProvider = loginUriProvider;
         this.i18nService = i18nService;
+        this.applicationPropertiesService = applicationPropertiesService;
     }
 
     @Override
@@ -62,6 +66,7 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
         String lastExecutionTimestamp = (temp > 0) ? new Date(temp).toString() : i18nService.getMessage("ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.notyetexecuted");
 
         Map<String, Object> params = new HashMap<>();
+        params.put("baseurl", applicationPropertiesService.getBaseUrl().getRawPath());
         params.put("token", secureTokenManager.getToken());
         params.put("delay", scrapingSettingsManager.getDelay());
         params.put("lastexecution", lastExecutionTimestamp);
@@ -94,6 +99,7 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
         String lastExecutionTimestamp = (temp > 0) ? new Date(temp).toString() : i18nService.getMessage("ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.settings.notyetexecuted");
 
         Map<String, Object> params = new HashMap<>();
+        params.put("baseurl", applicationPropertiesService.getBaseUrl().getRawPath());
         params.put("token", secureTokenManager.getToken());
         params.put("delay", scrapingSettingsManager.getDelay());
         params.put("lastexecution", lastExecutionTimestamp);

@@ -8,7 +8,7 @@
         <param name="vendor-icon">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/32.jpg</param>
         <param name="vendor-logo">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/144.jpg</param>
         <param name="configure.url">/plugins/servlet/promforbitbucket/token/</param>
-        <param name="atlassian-data-center-compatible">true</param>
+        <!--<param name="atlassian-data-center-compatible">true</param>-->
     </plugin-info>
 
     <!-- I18N -->
