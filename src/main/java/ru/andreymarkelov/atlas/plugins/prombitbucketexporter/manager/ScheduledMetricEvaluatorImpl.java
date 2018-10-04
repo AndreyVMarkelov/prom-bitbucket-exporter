@@ -1,15 +1,5 @@
 package ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager;
 
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import javax.annotation.Nonnull;
-
 import com.atlassian.bitbucket.permission.Permission;
 import com.atlassian.bitbucket.project.ProjectService;
 import com.atlassian.bitbucket.pull.PullRequest;
@@ -17,7 +7,9 @@ import com.atlassian.bitbucket.pull.PullRequestSearchRequest;
 import com.atlassian.bitbucket.pull.PullRequestService;
 import com.atlassian.bitbucket.repository.Repository;
 import com.atlassian.bitbucket.repository.RepositoryService;
+import com.atlassian.bitbucket.user.DetailedUser;
 import com.atlassian.bitbucket.user.SecurityService;
+import com.atlassian.bitbucket.user.UserAdminService;
 import com.atlassian.bitbucket.util.Operation;
 import com.atlassian.bitbucket.util.Page;
 import com.atlassian.bitbucket.util.PageRequest;
@@ -27,11 +19,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.annotation.Nonnull;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static com.atlassian.bitbucket.pull.PullRequestState.OPEN;
 import static java.lang.Thread.MIN_PRIORITY;
 import static java.util.concurrent.Executors.defaultThreadFactory;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
-
-import static com.atlassian.bitbucket.pull.PullRequestState.OPEN;
 
 public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, DisposableBean, InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(ScheduledMetricEvaluator.class);
@@ -44,6 +45,7 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
     private final ProjectService projectService;
     private final PullRequestService pullRequestService;
     private final SecurityService securityService;
+    private final UserAdminService userAdminService;
 
     /**
      * Scheduled executor to grab metrics.
@@ -55,6 +57,7 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
     private final AtomicInteger totalProjects;
     private final AtomicInteger totalRepositories;
     private final AtomicLong totalPullRequests;
+    private final AtomicInteger totalUsers;
 
     private ScheduledFuture<?> scraper;
 
@@ -63,12 +66,14 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
             RepositoryService repositoryService,
             ProjectService projectService,
             PullRequestService pullRequestService,
-            SecurityService securityService) {
+            SecurityService securityService,
+            UserAdminService userAdminService) {
         this.scrapingSettingsManager = scrapingSettingsManager;
         this.repositoryService = repositoryService;
         this.projectService = projectService;
         this.pullRequestService = pullRequestService;
         this.securityService = securityService;
+        this.userAdminService = userAdminService;
         this.executorService = newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(@Nonnull Runnable r) {
@@ -81,6 +86,7 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
         this.totalProjects = new AtomicInteger(0);
         this.totalRepositories = new AtomicInteger(0);
         this.totalPullRequests = new AtomicLong(0);
+        this.totalUsers = new AtomicInteger(0);
         this.lock = new ReentrantLock();
     }
 
@@ -104,20 +110,10 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
     public void afterPropertiesSet() {
         lock.lock();
         try {
-            startScraping(getDelay());
+            startScraping(scrapingSettingsManager.getDelay());
         } finally {
             lock.unlock();
         }
-    }
-
-    @Override
-    public int getDelay() {
-        return scrapingSettingsManager.getDelay();
-    }
-
-    @Override
-    public void setDelay(int delay) {
-        scrapingSettingsManager.setDelay(delay);
     }
 
     @Override
@@ -147,6 +143,11 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
         return totalPullRequests.get();
     }
 
+    @Override
+    public long getTotalUsers() {
+        return totalUsers.get();
+    }
+
     private void startScraping(int delay) {
         scraper = executorService.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -154,6 +155,7 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
                 calculateTotalProjects();
                 calculateTotalRepositories();
                 calculateTotalPullRequests();
+                calculateUsersCount();
                 lastExecutionTimestamp.set(System.currentTimeMillis());
             }
         }, 0, delay, TimeUnit.MINUTES);
@@ -162,12 +164,12 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
     private void calculateTotalProjects() {
         try {
             securityService.withPermission(Permission.ADMIN, "Read all projects").call(new Operation<Object, Throwable>() {
-                        @Override
-                        public Object perform() {
-                            totalProjects.set(projectService.findAllKeys().size());
-                            return null;
-                        }
-                    });
+                @Override
+                public Object perform() {
+                    totalProjects.set(projectService.findAllKeys().size());
+                    return null;
+                }
+            });
         } catch (Throwable th) {
             log.error("Cannot read all projects", th);
         }
@@ -212,6 +214,27 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
             });
         } catch (Throwable th) {
             log.error("Cannot read all pull requests", th);
+        }
+    }
+
+    private void calculateUsersCount() {
+        try {
+            securityService.withPermission(Permission.SYS_ADMIN, "Read all users").call(new Operation<Object, Throwable>() {
+                @Override
+                public Object perform() {
+                    int users = 0;
+                    PageRequest nextPage = new PageRequestImpl(0, 10000);
+                    do {
+                        Page<DetailedUser> detailedUserPage = userAdminService.findUsers(nextPage);
+                        users += detailedUserPage.getSize();
+                        nextPage = detailedUserPage.getNextPageRequest();
+                    } while (nextPage != null);
+                    totalUsers.set(users);
+                    return null;
+                }
+            });
+        } catch (Throwable th) {
+            log.error("Cannot read users count", th);
         }
     }
 

@@ -73,6 +73,22 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
             .labelNames("project", "repository", "username")
             .create();
 
+    //--> Clones
+
+    private final Counter cloneCounter = Counter.build()
+            .name("bitbucket_repo_clone_count")
+            .help("Repository Clones Count")
+            .labelNames("project", "repository", "username")
+            .create();
+
+    //--> Forks
+
+    private final Counter forkCounter = Counter.build()
+            .name("bitbucket_repo_fork_count")
+            .help("Repository Forks Count")
+            .labelNames("project", "repository", "username")
+            .create();
+
     //--> Pull requests
 
     private final Counter openPullRequest = Counter.build()
@@ -126,6 +142,16 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
     }
 
     @Override
+    public void cloneCounter(String project, String repository, String username) {
+        cloneCounter.labels(project, repository, username).inc();
+    }
+
+    @Override
+    public void forkCounter(String project, String repository, String username) {
+        forkCounter.labels(project, repository, username);
+    }
+
+    @Override
     public void openPullRequest(String project, String repository) {
         openPullRequest.labels(project, repository).inc();
     }
@@ -146,18 +172,20 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
         if (bitbucketServerLicense != null) {
             log.debug("License info: {}", bitbucketServerLicense);
             maintenanceExpiryDaysGauge.set(bitbucketServerLicense.getNumberOfDaysBeforeMaintenanceExpiry());
-            activeUsersGauge.set(bitbucketServerLicense.getMaximumNumberOfUsers());
-            allUsersGauge.set(licenseService.getLicensedUsersCount());
         }
 
+        activeUsersGauge.set(licenseService.getLicensedUsersCount());
         totalProjectsGauge.set(scheduledMetricEvaluator.getTotalProjects());
         totalRepositoriesGauge.set(scheduledMetricEvaluator.getTotalRepositories());
         totalPullRequestsGauge.set(scheduledMetricEvaluator.getTotalPullRequests());
+        allUsersGauge.set(scheduledMetricEvaluator.getTotalUsers());
 
         List<Collector.MetricFamilySamples> result = new ArrayList<>();
         result.addAll(successAuthCounter.collect());
         result.addAll(failedAuthCounter.collect());
         result.addAll(pushCounter.collect());
+        result.addAll(cloneCounter.collect());
+        result.addAll(forkCounter.collect());
         result.addAll(openPullRequest.collect());
         result.addAll(mergePullRequest.collect());
         result.addAll(declinePullRequest.collect());

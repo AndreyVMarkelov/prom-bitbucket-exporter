@@ -5,6 +5,8 @@ import com.atlassian.bitbucket.event.auth.AuthenticationSuccessEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestDeclinedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestMergedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestOpenedEvent;
+import com.atlassian.bitbucket.event.repository.RepositoryCloneEvent;
+import com.atlassian.bitbucket.event.repository.RepositoryForkedEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryPushEvent;
 import com.atlassian.bitbucket.repository.Repository;
 import com.atlassian.bitbucket.user.ApplicationUser;
@@ -24,6 +26,18 @@ public class MetricListener {
     public void repositoryPushEvent(RepositoryPushEvent repositoryPushEvent) {
         Repository repository = repositoryPushEvent.getRepository();
         metricCollector.pushCounter(repository.getProject().getKey(), repository.getName(), username(repositoryPushEvent.getUser()));
+    }
+
+    @EventListener
+    public void repositoryCloneEvent(RepositoryCloneEvent repositoryCloneEvent) {
+        Repository repository = repositoryCloneEvent.getRepository();
+        metricCollector.cloneCounter(repository.getProject().getKey(), repository.getName(), username(repositoryCloneEvent.getUser()));
+    }
+
+    @EventListener
+    public void repositoryForkedEvent(RepositoryForkedEvent repositoryForkedEvent) {
+        Repository repository = repositoryForkedEvent.getRepository();
+        metricCollector.forkCounter(repository.getProject().getKey(), repository.getName(), username(repositoryForkedEvent.getUser()));
     }
 
     //--> Pull Requests
