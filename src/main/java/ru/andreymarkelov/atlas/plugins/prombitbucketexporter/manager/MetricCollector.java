@@ -12,4 +12,8 @@ public interface MetricCollector {
     void openPullRequest(String project, String repository);
     void mergePullRequest(String project, String repository);
     void declinePullRequest(String project, String repository);
+    void pluginInstalled(String pluginKey);
+    void pluginUninstalled(String pluginKey);
+    void pluginEnabled(String pluginKey);
+    void pluginDisabled(String pluginKey);
 }

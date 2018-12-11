@@ -109,6 +109,32 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
             .labelNames("project", "repository")
             .create();
 
+    //--> Plugin
+
+    private final Counter pluginInstalled = Counter.build()
+            .name("bitbucket_plugin_installed")
+            .help("Plugin Installed Count")
+            .labelNames("pluginKey")
+            .create();
+
+    private final Counter pluginUninstalled = Counter.build()
+            .name("bitbucket_plugin_uninstalled")
+            .help("Plugin Uninstalled Count")
+            .labelNames("pluginKey")
+            .create();
+
+    private final Counter pluginEnabled = Counter.build()
+            .name("bitbucket_plugin_enabled")
+            .help("Plugin Enabled Count")
+            .labelNames("pluginKey")
+            .create();
+
+    private final Counter pluginDisabled = Counter.build()
+            .name("bitbucket_plugin_disabled")
+            .help("Plugin Disabled Count")
+            .labelNames("pluginKey")
+            .create();
+
     //--> Scheduled
 
     private final Gauge totalProjectsGauge = Gauge.build()
@@ -167,6 +193,26 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
     }
 
     @Override
+    public void pluginInstalled(String pluginKey) {
+        pluginInstalled.labels(pluginKey).inc();
+    }
+
+    @Override
+    public void pluginUninstalled(String pluginKey) {
+        pluginUninstalled.labels(pluginKey).inc();
+    }
+
+    @Override
+    public void pluginEnabled(String pluginKey) {
+        pluginEnabled.labels(pluginKey).inc();
+    }
+
+    @Override
+    public void pluginDisabled(String pluginKey) {
+        pluginDisabled.labels(pluginKey).inc();
+    }
+
+    @Override
     public List<Collector.MetricFamilySamples> collect() {
         BitbucketServerLicense bitbucketServerLicense = licenseService.get();
         if (bitbucketServerLicense != null) {
@@ -195,6 +241,10 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
         result.addAll(totalProjectsGauge.collect());
         result.addAll(totalRepositoriesGauge.collect());
         result.addAll(totalPullRequestsGauge.collect());
+        result.addAll(pluginInstalled.collect());
+        result.addAll(pluginUninstalled.collect());
+        result.addAll(pluginEnabled.collect());
+        result.addAll(pluginDisabled.collect());
         return result;
     }
 

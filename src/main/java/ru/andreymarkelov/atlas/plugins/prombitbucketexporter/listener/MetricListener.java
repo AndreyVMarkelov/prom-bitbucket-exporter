@@ -11,6 +11,10 @@ import com.atlassian.bitbucket.event.repository.RepositoryPushEvent;
 import com.atlassian.bitbucket.repository.Repository;
 import com.atlassian.bitbucket.user.ApplicationUser;
 import com.atlassian.event.api.EventListener;
+import com.atlassian.plugin.event.events.PluginDisabledEvent;
+import com.atlassian.plugin.event.events.PluginEnabledEvent;
+import com.atlassian.plugin.event.events.PluginInstalledEvent;
+import com.atlassian.plugin.event.events.PluginUninstalledEvent;
 import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.MetricCollector;
 
 public class MetricListener {
@@ -70,6 +74,26 @@ public class MetricListener {
     @EventListener
     public void authenticationFailureEvent(AuthenticationFailureEvent authenticationFailureEvent) {
         metricCollector.failedAuthCounter(username(authenticationFailureEvent.getUsername()));
+    }
+
+    @EventListener
+    public void pluginInstalledEvent(PluginInstalledEvent pluginInstalledEvent) {
+        metricCollector.pluginInstalled(pluginInstalledEvent.getPlugin().getKey());
+    }
+
+    @EventListener
+    public void pluginUninstalledEvent(PluginUninstalledEvent pluginUninstalledEvent) {
+        metricCollector.pluginUninstalled(pluginUninstalledEvent.getPlugin().getKey());
+    }
+
+    @EventListener
+    public void pluginEnabledEvent(PluginEnabledEvent pluginEnabledEvent) {
+        metricCollector.pluginEnabled(pluginEnabledEvent.getPlugin().getKey());
+    }
+
+    @EventListener
+    public void pluginDisabledEvent(PluginDisabledEvent pluginDisabledEvent) {
+        metricCollector.pluginDisabled(pluginDisabledEvent.getPlugin().getKey());
     }
 
     private static String username(String username) {
