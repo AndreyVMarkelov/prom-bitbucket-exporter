@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import ru.andreymarkelov.atlas.plugins.prombitbucketexporter.monitor.RepositoriesMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +24,18 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
     private final ScheduledMetricEvaluator scheduledMetricEvaluator;
     private final CollectorRegistry registry;
     private final MailService mailService;
+    private final RepositoriesMonitor repositoriesMonitor;
 
     public MetricCollectorImpl(
             LicenseService licenseService,
             ScheduledMetricEvaluator scheduledMetricEvaluator,
-            MailService mailService) {
+            MailService mailService,
+            RepositoriesMonitor repositoriesMonitor) {
         this.licenseService = licenseService;
         this.scheduledMetricEvaluator = scheduledMetricEvaluator;
         this.registry = CollectorRegistry.defaultRegistry;
         this.mailService = mailService;
+        this.repositoriesMonitor = repositoriesMonitor;
     }
 
     //--> License
@@ -41,15 +45,22 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
             .help("Maintenance Expiry Days Gauge")
             .create();
 
-    private final Gauge allUsersGauge = Gauge.build()
-            .name("bitbucket_all_users_gauge")
-            .help("All Users Gauge")
+    private final Gauge licenseExpiryDaysGauge = Gauge.build()
+            .name("bitbucket_license_expiry_days_gauge")
+            .help("License Expiry Days Gauge")
+            .create();
+
+    private final Gauge allowedUsersGauge = Gauge.build()
+            .name("bitbucket_allowed_users_gauge")
+            .help("Maximum Allowed Users")
             .create();
 
     private final Gauge activeUsersGauge = Gauge.build()
             .name("bitbucket_active_users_gauge")
             .help("Active Users Gauge")
             .create();
+
+    //<-- License
 
     //--> Login/Logout
 
@@ -214,17 +225,11 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
 
     @Override
     public List<Collector.MetricFamilySamples> collect() {
-        BitbucketServerLicense bitbucketServerLicense = licenseService.get();
-        if (bitbucketServerLicense != null) {
-            log.debug("License info: {}", bitbucketServerLicense);
-            maintenanceExpiryDaysGauge.set(bitbucketServerLicense.getNumberOfDaysBeforeMaintenanceExpiry());
-        }
+        licenseMetrics();
 
-        activeUsersGauge.set(licenseService.getLicensedUsersCount());
         totalProjectsGauge.set(scheduledMetricEvaluator.getTotalProjects());
         totalRepositoriesGauge.set(scheduledMetricEvaluator.getTotalRepositories());
         totalPullRequestsGauge.set(scheduledMetricEvaluator.getTotalPullRequests());
-        allUsersGauge.set(scheduledMetricEvaluator.getTotalUsers());
 
         List<Collector.MetricFamilySamples> result = new ArrayList<>();
         result.addAll(successAuthCounter.collect());
@@ -235,9 +240,12 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
         result.addAll(openPullRequest.collect());
         result.addAll(mergePullRequest.collect());
         result.addAll(declinePullRequest.collect());
+        //--> license
         result.addAll(maintenanceExpiryDaysGauge.collect());
-        result.addAll(allUsersGauge.collect());
+        result.addAll(licenseExpiryDaysGauge.collect());
         result.addAll(activeUsersGauge.collect());
+        result.addAll(allowedUsersGauge.collect());
+        //<-- license
         result.addAll(totalProjectsGauge.collect());
         result.addAll(totalRepositoriesGauge.collect());
         result.addAll(totalPullRequestsGauge.collect());
@@ -262,5 +270,15 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
     public void afterPropertiesSet() {
         this.registry.register(this);
         DefaultExports.initialize();
+    }
+
+    private void licenseMetrics() {
+        activeUsersGauge.set(licenseService.getLicensedUsersCount());
+        BitbucketServerLicense bitbucketServerLicense = licenseService.get();
+        if (bitbucketServerLicense != null) {
+            maintenanceExpiryDaysGauge.set(bitbucketServerLicense.getNumberOfDaysBeforeMaintenanceExpiry());
+            licenseExpiryDaysGauge.set(bitbucketServerLicense.getNumberOfDaysBeforeExpiry());
+            allowedUsersGauge.set(bitbucketServerLicense.getMaximumNumberOfUsers());
+        }
     }
 }

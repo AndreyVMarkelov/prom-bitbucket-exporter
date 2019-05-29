@@ -76,6 +76,8 @@
     <component name="Scheduled Metrics Evaluator" key="prom-for-bitbucket-exporter-evaluator" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluatorImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluator</interface>
     </component>
+    <component name="Projects Monitor" key="prom-for-bitbucket-exporter-projects-monitor" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.monitor.ProjectsMonitor"/>
+    <component name="Repositories Monitor" key="prom-for-bitbucket-exporter-repositories-monitor" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.monitor.RepositoriesMonitor"/>
 
     <!-- Component Imports -->
     <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
@@ -83,4 +85,5 @@
     <component-import key="soyTemplateRenderer" interface="com.atlassian.soy.renderer.SoyTemplateRenderer"/>
     <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
     <component-import key="licenseService" interface="com.atlassian.bitbucket.license.LicenseService"/>
+    <component-import key="pluginScheduler" interface="com.atlassian.sal.api.scheduling.PluginScheduler"/>
 </atlassian-plugin>

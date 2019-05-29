@@ -7,9 +7,7 @@ import com.atlassian.bitbucket.pull.PullRequestSearchRequest;
 import com.atlassian.bitbucket.pull.PullRequestService;
 import com.atlassian.bitbucket.repository.Repository;
 import com.atlassian.bitbucket.repository.RepositoryService;
-import com.atlassian.bitbucket.user.DetailedUser;
 import com.atlassian.bitbucket.user.SecurityService;
-import com.atlassian.bitbucket.user.UserAdminService;
 import com.atlassian.bitbucket.util.Operation;
 import com.atlassian.bitbucket.util.Page;
 import com.atlassian.bitbucket.util.PageRequest;
@@ -45,7 +43,6 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
     private final ProjectService projectService;
     private final PullRequestService pullRequestService;
     private final SecurityService securityService;
-    private final UserAdminService userAdminService;
 
     /**
      * Scheduled executor to grab metrics.
@@ -57,7 +54,6 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
     private final AtomicInteger totalProjects;
     private final AtomicInteger totalRepositories;
     private final AtomicLong totalPullRequests;
-    private final AtomicInteger totalUsers;
 
     private ScheduledFuture<?> scraper;
 
@@ -66,14 +62,12 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
             RepositoryService repositoryService,
             ProjectService projectService,
             PullRequestService pullRequestService,
-            SecurityService securityService,
-            UserAdminService userAdminService) {
+            SecurityService securityService) {
         this.scrapingSettingsManager = scrapingSettingsManager;
         this.repositoryService = repositoryService;
         this.projectService = projectService;
         this.pullRequestService = pullRequestService;
         this.securityService = securityService;
-        this.userAdminService = userAdminService;
         this.executorService = newSingleThreadScheduledExecutor(new ThreadFactory() {
             @Override
             public Thread newThread(@Nonnull Runnable r) {
@@ -86,7 +80,6 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
         this.totalProjects = new AtomicInteger(0);
         this.totalRepositories = new AtomicInteger(0);
         this.totalPullRequests = new AtomicLong(0);
-        this.totalUsers = new AtomicInteger(0);
         this.lock = new ReentrantLock();
     }
 
@@ -143,11 +136,6 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
         return totalPullRequests.get();
     }
 
-    @Override
-    public long getTotalUsers() {
-        return totalUsers.get();
-    }
-
     private void startScraping(int delay) {
         scraper = executorService.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -155,7 +143,6 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
                 calculateTotalProjects();
                 calculateTotalRepositories();
                 calculateTotalPullRequests();
-                calculateUsersCount();
                 lastExecutionTimestamp.set(System.currentTimeMillis());
             }
         }, 0, delay, TimeUnit.MINUTES);
@@ -214,27 +201,6 @@ public class ScheduledMetricEvaluatorImpl implements ScheduledMetricEvaluator, D
             });
         } catch (Throwable th) {
             log.error("Cannot read all pull requests", th);
-        }
-    }
-
-    private void calculateUsersCount() {
-        try {
-            securityService.withPermission(Permission.SYS_ADMIN, "Read all users").call(new Operation<Object, Throwable>() {
-                @Override
-                public Object perform() {
-                    int users = 0;
-                    PageRequest nextPage = new PageRequestImpl(0, 10000);
-                    do {
-                        Page<DetailedUser> detailedUserPage = userAdminService.findUsers(nextPage);
-                        users += detailedUserPage.getSize();
-                        nextPage = detailedUserPage.getNextPageRequest();
-                    } while (nextPage != null);
-                    totalUsers.set(users);
-                    return null;
-                }
-            });
-        } catch (Throwable th) {
-            log.error("Cannot read users count", th);
         }
     }
 

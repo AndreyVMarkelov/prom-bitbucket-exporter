@@ -6,5 +6,4 @@ public interface ScheduledMetricEvaluator {
     long getTotalProjects();
     long getTotalRepositories();
     long getTotalPullRequests();
-    long getTotalUsers();
 }

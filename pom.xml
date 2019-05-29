@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.andreymarkelov.atlas.plugins</groupId>
     <artifactId>prom-bitbucket-exporter</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
     <packaging>atlassian-plugin</packaging>
 
     <name>Prometheus Exporter For Bitbucket</name>
@@ -15,6 +15,12 @@
         <name>Andrey Markelov</name>
         <url>http://ru.linkedin.com/in/andreymarkelov/</url>
     </organization>
+
+    <scm>
+        <url>https://github.com/AndreyVMarkelov/prom-bitbucket-exporter</url>
+        <connection>scm:git:https://github.com/AndreyVMarkelov/prom-bitbucket-exporter.git</connection>
+        <tag>HEAD</tag>
+    </scm>
 
     <dependencyManagement>
         <dependencies>
@@ -147,14 +153,24 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <properties>
-        <bitbucket.version>4.0.0-m27</bitbucket.version>
+        <bitbucket.version>5.0.1</bitbucket.version>
         <bitbucket.data.version>${bitbucket.version}</bitbucket.data.version>
         <amps.version>6.3.15</amps.version>
         <prometheus.version>0.6.0</prometheus.version>
         <atlassian.plugin.key>${project.groupId}.${project.artifactId}</atlassian.plugin.key>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 </project>
