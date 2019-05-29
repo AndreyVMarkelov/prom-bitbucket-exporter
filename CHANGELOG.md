@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+
+## [1.0.11] (v5.x-6.3.x)
+
 - Fixed performance issues
 - Added new metric: bitbucket_allowed_users_gauge (maximum allowed with current license)
 - Added new metric: bitbucket_license_expiry_days_gauge (days before license will expire)
