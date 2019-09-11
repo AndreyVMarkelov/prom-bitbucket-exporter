@@ -86,4 +86,5 @@
     <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
     <component-import key="licenseService" interface="com.atlassian.bitbucket.license.LicenseService"/>
     <component-import key="pluginScheduler" interface="com.atlassian.sal.api.scheduling.PluginScheduler"/>
+    <component-import key="permissionService" interface="com.atlassian.bitbucket.permission.PermissionService"/>
 </atlassian-plugin>

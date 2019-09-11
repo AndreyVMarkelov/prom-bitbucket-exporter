@@ -76,6 +76,13 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
             .labelNames("username")
             .create();
 
+    //--> Repositories
+    private final Counter repositoryMoveCounter = Counter.build()
+            .name("bitbucket_repo_move_count")
+            .help("Repository Moves Count")
+            .labelNames("oldProject", "NewProject")
+            .create();
+
     //--> Pushes
 
     private final Counter pushCounter = Counter.build()
@@ -174,6 +181,11 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
     }
 
     @Override
+    public void repositoryMoveCounter(String oldProject, String newProject) {
+        repositoryMoveCounter.labels(oldProject, newProject).inc();
+    }
+
+    @Override
     public void pushCounter(String project, String repository, String username) {
         pushCounter.labels(project, repository, username).inc();
     }
@@ -234,6 +246,7 @@ public class MetricCollectorImpl extends Collector implements MetricCollector, D
         List<Collector.MetricFamilySamples> result = new ArrayList<>();
         result.addAll(successAuthCounter.collect());
         result.addAll(failedAuthCounter.collect());
+        result.addAll(repositoryMoveCounter.collect());
         result.addAll(pushCounter.collect());
         result.addAll(cloneCounter.collect());
         result.addAll(forkCounter.collect());

@@ -6,6 +6,7 @@ public interface MetricCollector {
     CollectorRegistry getRegistry();
     void successAuthCounter(String username);
     void failedAuthCounter(String username);
+    void repositoryMoveCounter(String oldProject, String newProject);
     void pushCounter(String project, String repository, String username);
     void cloneCounter(String project, String repository, String username);
     void forkCounter(String project, String repository, String username);

@@ -7,6 +7,7 @@ import com.atlassian.bitbucket.event.pull.PullRequestMergedEvent;
 import com.atlassian.bitbucket.event.pull.PullRequestOpenedEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryCloneEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryForkedEvent;
+import com.atlassian.bitbucket.event.repository.RepositoryModifiedEvent;
 import com.atlassian.bitbucket.event.repository.RepositoryPushEvent;
 import com.atlassian.bitbucket.repository.Repository;
 import com.atlassian.bitbucket.user.ApplicationUser;
@@ -24,7 +25,16 @@ public class MetricListener {
         this.metricCollector = metricCollector;
     }
 
-    //--> Push
+    //--> Repositories
+
+    @EventListener
+    public void repositoryModifiedEvent(RepositoryModifiedEvent repositoryModifiedEvent) {
+        Repository newRepo = repositoryModifiedEvent.getNewValue();
+        Repository oldRepo = repositoryModifiedEvent.getOldValue();
+        if (!oldRepo.getProject().equals(newRepo.getProject())) {
+            metricCollector.repositoryMoveCounter(oldRepo.getProject().getKey(), newRepo.getProject().getKey());
+        }
+    }
 
     @EventListener
     public void repositoryPushEvent(RepositoryPushEvent repositoryPushEvent) {
@@ -75,6 +85,8 @@ public class MetricListener {
     public void authenticationFailureEvent(AuthenticationFailureEvent authenticationFailureEvent) {
         metricCollector.failedAuthCounter(username(authenticationFailureEvent.getUsername()));
     }
+
+    //--> Plugins
 
     @EventListener
     public void pluginInstalledEvent(PluginInstalledEvent pluginInstalledEvent) {
