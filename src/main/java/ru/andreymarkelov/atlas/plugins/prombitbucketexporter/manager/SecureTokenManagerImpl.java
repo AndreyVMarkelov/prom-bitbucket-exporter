@@ -7,7 +7,7 @@ public class SecureTokenManagerImpl implements SecureTokenManager {
     private final PluginSettings pluginSettings;
 
     public SecureTokenManagerImpl(PluginSettingsFactory pluginSettingsFactory) {
-        this.pluginSettings = pluginSettingsFactory.createSettingsForKey("PLUGIN_PROMETHEUS_FOR_CONFLUENCE");
+        this.pluginSettings = pluginSettingsFactory.createSettingsForKey("PLUGIN_PROMETHEUS_FOR_BITBUCKET");
     }
 
     @Override

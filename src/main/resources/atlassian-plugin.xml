@@ -2,9 +2,11 @@
     <plugin-info>
         <description>${project.description}</description>
         <version>${project.version}</version>
-        <vendor name="${project.organization.name}" url="${project.organization.url}" />
-        <param name="plugin-icon">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/prom-exporter-sm.png</param>
-        <param name="plugin-logo">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/prom-exporter.png</param>
+        <vendor name="${project.organization.name}" url="${project.organization.url}"/>
+        <param name="plugin-icon">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/prom-exporter-sm.png
+        </param>
+        <param name="plugin-logo">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/prom-exporter.png
+        </param>
         <param name="vendor-icon">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/32.jpg</param>
         <param name="vendor-logo">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/144.jpg</param>
         <param name="plugin-banner">/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images/banner.png</param>
@@ -13,21 +15,29 @@
     </plugin-info>
 
     <!-- I18N -->
-    <resource type="i18n" name="i18n" location="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.i18n.prom-bitbucket-exporter"/>
+    <resource type="i18n" name="i18n"
+              location="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.i18n.prom-bitbucket-exporter"/>
 
     <!-- Web Resources -->
     <web-resource name="Web Resources" key="prom-bitbucket-exporter-resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
-        <resource type="download" name="prom-bitbucket-exporter.css" location="/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/css/prom-bitbucket-exporter.css"/>
-        <resource type="download" name="prom-bitbucket-exporter.js" location="/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/js/prom-bitbucket-exporter.js"/>
-        <resource type="download" name="images/" location="/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images"/>
+        <resource type="download" name="prom-bitbucket-exporter.css"
+                  location="/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/css/prom-bitbucket-exporter.css"/>
+        <resource type="download" name="prom-bitbucket-exporter.js"
+                  location="/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/js/prom-bitbucket-exporter.js"/>
+        <resource type="download" name="images/"
+                  location="/ru/andreymarkelov/atlas/plugins/prombitbucketexporter/images"/>
         <context>prom-bitbucket-exporter</context>
     </web-resource>
 
     <!-- Web Items -->
-    <web-item name="Security Token Admin Settings Link" key="prom-bitbucket-exporter-admin-link" section="atl.admin/admin-plugins-section" weight="500">
-        <label key="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.section">Prometheus Exporter Settings</label>
-        <description key="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.section.desc">Setup security token for endpoint.</description>
+    <web-item name="Security Token Admin Settings Link" key="prom-bitbucket-exporter-admin-link"
+              section="atl.admin/admin-plugins-section" weight="500">
+        <label key="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.section">Prometheus Exporter Settings
+        </label>
+        <description key="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.admin.section.desc">Setup security token
+            for endpoint.
+        </description>
         <link>/plugins/servlet/promforbitbucket/token/</link>
         <conditions type="AND">
             <condition class="com.atlassian.bitbucket.web.conditions.HasGlobalPermissionCondition">
@@ -37,11 +47,13 @@
     </web-item>
 
     <!-- Servlets -->
-    <servlet name="Security Token Servlet" key="prom-for-bitbucket-exporter-admin-servlet" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.servlet.AdminMetricsSecurityTokenServlet">
+    <servlet name="Security Token Servlet" key="prom-for-bitbucket-exporter-admin-servlet"
+             class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.servlet.AdminMetricsSecurityTokenServlet">
         <description>The Account Servlet Plugin</description>
         <url-pattern>/promforbitbucket/token/*</url-pattern>
     </servlet>
-    <servlet name="Exporter Servlet" key="prom-for-bitbucket-exporter-servlet" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.servlet.PrometheusExporter">
+    <servlet name="Exporter Servlet" key="prom-for-bitbucket-exporter-servlet"
+             class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.servlet.PrometheusExporter">
         <description>This servlet exposes metrics to prometheus.</description>
         <url-pattern>/prometheus/metrics</url-pattern>
     </servlet>
@@ -59,29 +71,36 @@
             <exclude>/**/*.soy</exclude>
         </directory>
         <dependency>com.atlassian.bitbucket.server.bitbucket-web-api:jquery</dependency>
-        <dependency>ru.andreymarkelov.atlas.plugins.prom-bitbucket-exporter:prom-bitbucket-exporter-resources</dependency>
+        <dependency>ru.andreymarkelov.atlas.plugins.prom-bitbucket-exporter:prom-bitbucket-exporter-resources
+        </dependency>
     </client-resource>
 
     <!-- Components -->
-    <component name="Metric Listener" key="prom-for-bitbucket-exporter-listener" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.listener.MetricListener"/>
-    <component name="Metrics Exporter" key="prom-for-bitbucket-exporter-exporter" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.MetricCollectorImpl" public="true">
+    <component name="Metric Listener" key="prom-for-bitbucket-exporter-listener"
+               class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.listener.MetricListener"/>
+    <component name="Metrics Exporter" key="prom-for-bitbucket-exporter-exporter"
+               class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.MetricCollectorImpl" public="true">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.MetricCollector</interface>
         <description>This service collects metrics.</description>
     </component>
-    <component name="Security Token Data Manager" key="prom-for-bitbucket-exporter-data-manager" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManagerImpl">
+    <component name="Security Token Data Manager" key="prom-for-bitbucket-exporter-data-manager"
+               class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManagerImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.SecureTokenManager</interface>
     </component>
-    <component name="Scraping Data Manager" key="prom-for-bitbucket-exporter-scraping-manager" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScrapingSettingsManagerImpl">
+    <component name="Scraping Data Manager" key="prom-for-bitbucket-exporter-scraping-manager"
+               class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScrapingSettingsManagerImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScrapingSettingsManager</interface>
     </component>
-    <component name="Scheduled Metrics Evaluator" key="prom-for-bitbucket-exporter-evaluator" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluatorImpl">
+    <component name="Scheduled Metrics Evaluator" key="prom-for-bitbucket-exporter-evaluator"
+               class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluatorImpl">
         <interface>ru.andreymarkelov.atlas.plugins.prombitbucketexporter.manager.ScheduledMetricEvaluator</interface>
     </component>
     <component name="Projects Monitor" key="prom-for-bitbucket-exporter-projects-monitor" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.monitor.ProjectsMonitor"/>
     <component name="Repositories Monitor" key="prom-for-bitbucket-exporter-repositories-monitor" class="ru.andreymarkelov.atlas.plugins.prombitbucketexporter.monitor.RepositoriesMonitor"/>
 
     <!-- Component Imports -->
-    <component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
+    <component-import key="pluginSettingsFactory"
+                      interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory"/>
     <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties"/>
     <component-import key="soyTemplateRenderer" interface="com.atlassian.soy.renderer.SoyTemplateRenderer"/>
     <component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider"/>
