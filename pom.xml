@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.andreymarkelov.atlas.plugins</groupId>
-    <artifactId>prom-bitbucket-exporter</artifactId>
-    <version>1.0.12</version>
+    <artifactId>prom-bitbucket-exporter-lite</artifactId>
+    <version>1.0.14</version>
     <packaging>atlassian-plugin</packaging>
 
     <name>Prometheus Exporter For Bitbucket</name>

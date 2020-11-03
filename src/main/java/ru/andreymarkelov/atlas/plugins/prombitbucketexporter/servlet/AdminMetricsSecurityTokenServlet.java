@@ -114,7 +114,7 @@ public class AdminMetricsSecurityTokenServlet extends HttpServlet {
         try {
             soyTemplateRenderer.render(
                     response.getWriter(),
-                    "ru.andreymarkelov.atlas.plugins.prom-bitbucket-exporter:prom-for-bitbucket-exporter-templates",
+                    "ru.andreymarkelov.atlas.plugins.prom-bitbucket-exporter-lite:prom-for-bitbucket-exporter-templates",
                     TEMPLATE_NAME,
                     data
             );
